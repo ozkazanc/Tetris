@@ -46,25 +46,37 @@ int main() {
     blocks[6] = L"  x   x  xx     "; //J block
 
 	InitField();
+	// Draw Next Block Window
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 6; j++) {
+			if (j == 0) swprintf_s(&screen[(5 + i) * nScreenWidth + field_width + 6], 2, L"|");
+			else if (j == 5) swprintf_s(&screen[(5 + i) * nScreenWidth + field_width + 6 + j], 2, L"|");
+			else if(i == 0) swprintf_s(&screen[4 * nScreenWidth + field_width + 6 + j], 2, L"_");
+			else if(i == 5) swprintf_s(&screen[10 * nScreenWidth + field_width + 6 + j], 2, L"_");
+		}
+	}
+	swprintf_s(&screen[25 * nScreenWidth + field_width + 6], 19, L"Press 'q' to quit.");
 	
 	// Variables
+	bool gameOver = false;
 	int score = 0;
+	int lineCount = 0;
 
-	int pieceCount = 0;
 	int tickCount = 0;
 	int playSpeed = 20;
 	bool forceDown = false;
 
-	int key[4];
+	int key[5];
+	bool rotateHold = false;
+	
+	int pieceCount = 1;
 	int currentBlock = rand() % 7;
-	bool drawNextBlock = true;
-	int nextBlock = rand() % 7;
 	int currentR = 0;
 	int currentX = field_width / 2;
 	int currentY = 0;
-	bool keyHold = false;
-	bool rotateHold = false;
-	bool gameOver = false;
+	
+	int nextBlock = rand() % 7;
+	bool drawNextBlock = true;
 
 	std::vector<int> vLines;
 	while (!gameOver){
@@ -76,10 +88,12 @@ int main() {
 
 		// Input ==========================================
 		
-		for (int k = 0; k < 4; k++)								// R   L   D Z
-			key[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
+		for (int k = 0; k < 5; k++)								// R   L   D ZQ
+			key[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28ZQ"[k]))) != 0;
 
 		// Game Logic =====================================
+		// Press Q to quit:
+		if (key[4]) break;
 		
 		// Handle player movement
 		currentX += (key[0] && DoesBlockFit(currentBlock, currentR, currentX + 1, currentY)) ? 1 : 0;
@@ -128,8 +142,10 @@ int main() {
 					}
 				//Increment the score
 				score += 25;
-				if (!vLines.empty())	score += (1 << vLines.size()) * 100;
-
+				if (!vLines.empty()) {
+					score += (1 << vLines.size()) * 100;
+					lineCount += vLines.size();
+				}
 				// Pick a new block
 				currentX = field_width / 2;
 				currentY = 0;
@@ -156,17 +172,19 @@ int main() {
 			for (int py = 0; py < 4; py++)
 				if (blocks[currentBlock][Rotate(px, py, currentR)] != L' ')
 					screen[(currentY + py + 2)*nScreenWidth + (currentX + px + 2)] = blocks[currentBlock][Rotate(px, py, currentR)];
-		// Draw score
+		// Draw score and line count
 		swprintf_s(&screen[2 * nScreenWidth + field_width + 6], 16, L"SCORE: %8d", score);
+
+		swprintf_s(&screen[3 * nScreenWidth + field_width + 6], 16, L"Total Lines: %2d", lineCount);
 
 		// Draw Next Block
 		if (drawNextBlock) {
 			for (int px = 0; px < 4; px++)
 				for (int py = 0; py < 4; py++)
 					if (blocks[nextBlock][Rotate(px, py, 0)] != L' ')
-						screen[(4 + py) * nScreenWidth + field_width + 6 + px] = blocks[nextBlock][Rotate(px, py, 0)];
+						screen[(6 + py) * nScreenWidth + field_width + 7 + px] = blocks[nextBlock][Rotate(px, py, 0)];
 					else
-						screen[(4 + py) * nScreenWidth + field_width + 6 + px] = L' ';
+						screen[(6 + py) * nScreenWidth + field_width + 7 + px] = L' ';
 		}
 
 		if (!vLines.empty())
