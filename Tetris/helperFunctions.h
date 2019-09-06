@@ -17,8 +17,13 @@
 #include <iostream>
 #include <string>
 
-void printField(const char field[24][12], int height, int width);
-void fieldInit(char field[24][12], int height, int width);
+extern const int field_height;
+extern const int field_width;
+extern char field[];
+extern std::string blocks[7];
+
+void printField();
+void initField();
 void printBlock(const std::string& block);
 
 #endif /* HELPERFUNCTIONS_H */

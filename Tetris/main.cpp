@@ -18,17 +18,13 @@
 
 
 //Tetris blocks and playing field
-static const int field_width = 12;
-static const int field_height = 24;
+const int field_width = 12;
+const int field_height = 24;
 std::string blocks[7];
-char field[field_height][field_width];
+char field[field_height*field_width];
 
 int main() {
-    //blocks[0] = "  x   x   x   x "; //I block
-	blocks[0] = "  x "
-				"  x "
-				"  x "
-				"  x " ;
+    blocks[0] = "  x   x   x   x "; //I block
     blocks[1] = "     xx  xx     "; //O block
     blocks[2] = " x   xx   x     "; //S block
     blocks[3] = "  x  xx  x      "; //Z block
@@ -37,8 +33,8 @@ int main() {
     blocks[6] = "  x   x  xx     "; //J block
 
     //printField(field,FIELD_HEIGHT,FIELD_WIDTH);
-	fieldInit(field, field_height, field_width);
-	printField(field, field_height, field_width);
+	initField();
+	printField();
     printBlock(blocks[0]);
     printBlock(blocks[1]);
     printBlock(blocks[2]);

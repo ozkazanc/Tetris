@@ -5,21 +5,29 @@
  */
 # include "helperFunctions.h"
 
-void printField(const char field[24][12], int height, int width){
-    for(int i = 0; i < height; i++){
-        for(int j = 0; j < width;j++)
-            std::cout << field[i][j];
+//globals:
+
+//char field[]
+//const int field_height
+//const int field_width
+
+//std::string blocks[7]
+
+void printField(){
+    for(int i = 0; i < field_height; i++){
+        for(int j = 0; j < field_width;j++)
+            std::cout << field[i*field_width + j];
         std::cout << std::endl;
     }
 }
-void fieldInit(char field[24][12], int height, int width){
-    for(int i = 0; i < height; i++){
-        for(int j = 0; j < width;j++)
-            field[i][j] = (j == 0 || j == width - 1 || i == height - 1) ? '#' : ' '; 
+void initField(){
+	for (int i = 0; i < field_height; i++){
+		for (int j = 0; j < field_width; j++)
+			field[i*field_width + j] = (j == 0 || j == field_width - 1 || i == field_height - 1) ? '#' : ' ';
     }
 }
 void printBlock(const std::string& block){
-    for(int i = 0; i < block.length();i++){
+    for(unsigned int i = 0; i < block.length();i++){
         if(i % 4 == 0) std::cout << std::endl;
         std::cout << block[i];       
     }
