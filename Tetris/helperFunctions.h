@@ -19,12 +19,14 @@
 
 extern const int field_height;
 extern const int field_width;
-extern char field[];
-extern std::string blocks[7];
+extern wchar_t field[];
+extern std::wstring blocks[7];
 
-void printField();
-void initField();
-void printBlock(const std::string& block);
+void PrintField();
+void InitField();
+void PrintBlock(const std::string& block);
+int Rotate(int px, int py, int r);
+bool DoesBlockFit(int block, int r, int posX, int posY);
 
 #endif /* HELPERFUNCTIONS_H */
 
