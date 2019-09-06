@@ -27,7 +27,7 @@ const int field_width = 12;
 const int field_height = 24;
 std::wstring blocks[7];
 wchar_t field[field_height*field_width];
-int nScreenWidth = 80;			// Console Screen Size X (columns)
+int nScreenWidth = 120;			// Console Screen Size X (columns)
 int nScreenHeight = 30;			// Console Screen Size Y (rows)
 int main() {
 	// Create Screen Buffer
@@ -47,7 +47,7 @@ int main() {
 
 	InitField();
 	
-	//Game loop
+	// Variables
 	int score = 0;
 
 	int pieceCount = 0;
@@ -55,18 +55,19 @@ int main() {
 	int playSpeed = 20;
 	bool forceDown = false;
 
-	int bKey[4];
-	int currentBlock = 0;
+	int key[4];
+	int currentBlock = rand() % 7;
+	bool drawNextBlock = true;
+	int nextBlock = rand() % 7;
 	int currentR = 0;
 	int currentX = field_width / 2;
 	int currentY = 0;
 	bool keyHold = false;
 	bool rotateHold = false;
-	bool bGameOver = false;
+	bool gameOver = false;
 
 	std::vector<int> vLines;
-	while (!bGameOver){
-		//spawn block if not placed
+	while (!gameOver){
 		
 		//Timing ==========================================
 		std::this_thread::sleep_for(std::chrono::milliseconds(50)); // Small Step = 1 Game Tick
@@ -76,17 +77,17 @@ int main() {
 		// Input ==========================================
 		
 		for (int k = 0; k < 4; k++)								// R   L   D Z
-			bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
+			key[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
 
 		// Game Logic =====================================
 		
 		// Handle player movement
-		currentX += (bKey[0] && DoesBlockFit(currentBlock, currentR, currentX + 1, currentY)) ? 1 : 0;
-		currentX -= (bKey[1] && DoesBlockFit(currentBlock, currentR, currentX - 1, currentY)) ? 1 : 0;
-		currentY += (bKey[2] && DoesBlockFit(currentBlock, currentR, currentX, currentY + 1)) ? 1 : 0;
+		currentX += (key[0] && DoesBlockFit(currentBlock, currentR, currentX + 1, currentY)) ? 1 : 0;
+		currentX -= (key[1] && DoesBlockFit(currentBlock, currentR, currentX - 1, currentY)) ? 1 : 0;
+		currentY += (key[2] && DoesBlockFit(currentBlock, currentR, currentX, currentY + 1)) ? 1 : 0;
 		
-		// Rotate,but stop latching
-		if (bKey[3])
+		// Rotate
+		if (key[3])
 		{
 			currentR += (rotateHold && DoesBlockFit(currentBlock, currentR + 1, currentX, currentY)) ? 1 : 0;
 			rotateHold = false;
@@ -96,7 +97,8 @@ int main() {
 
 		if (forceDown){
 			tickCount = 0;
-			if (pieceCount % 10) playSpeed--;
+			if (pieceCount % 10 == 0) playSpeed--;
+			drawNextBlock = false;
 
 			if (DoesBlockFit(currentBlock, currentR, currentX, currentY + 1)){
 				currentY++;
@@ -132,10 +134,13 @@ int main() {
 				currentX = field_width / 2;
 				currentY = 0;
 				currentR = 0;
-				currentBlock = rand() % 7;
+				currentBlock = nextBlock;
+				drawNextBlock = true;
+				nextBlock = rand() % 7;
+				pieceCount++;
 
 				// If piece does not fit straight away, game over!
-				bGameOver = !DoesBlockFit(currentBlock, currentR, currentX, currentY);
+				gameOver = !DoesBlockFit(currentBlock, currentR, currentX, currentY);
 			}
 
 		}
@@ -146,13 +151,23 @@ int main() {
 			for (int y = 0; y < field_height; y++)
 				screen[(y + 2)*nScreenWidth + (x + 2)] = field[y*field_width + x];
 
-		// Draw Current Piece
+		// Draw Current Block
 		for (int px = 0; px < 4; px++)
 			for (int py = 0; py < 4; py++)
 				if (blocks[currentBlock][Rotate(px, py, currentR)] != L' ')
 					screen[(currentY + py + 2)*nScreenWidth + (currentX + px + 2)] = blocks[currentBlock][Rotate(px, py, currentR)];
-
+		// Draw score
 		swprintf_s(&screen[2 * nScreenWidth + field_width + 6], 16, L"SCORE: %8d", score);
+
+		// Draw Next Block
+		if (drawNextBlock) {
+			for (int px = 0; px < 4; px++)
+				for (int py = 0; py < 4; py++)
+					if (blocks[nextBlock][Rotate(px, py, 0)] != L' ')
+						screen[(4 + py) * nScreenWidth + field_width + 6 + px] = blocks[nextBlock][Rotate(px, py, 0)];
+					else
+						screen[(4 + py) * nScreenWidth + field_width + 6 + px] = L' ';
+		}
 
 		if (!vLines.empty())
 		{

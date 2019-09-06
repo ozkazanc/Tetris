@@ -1,4 +1,9 @@
 Debug/*
+Tetris/MakeFile
+Tetris/build
+Tetris/dist
+Tetris/nbproject
+Tetris/.dep.inc
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
