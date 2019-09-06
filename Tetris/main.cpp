@@ -16,36 +16,40 @@
 #include <string>
 #include "helperFunctions.h"
 
-#define FIELD_HEIGHT 24
-#define FIELD_WIDTH 12
 
 //Tetris blocks and playing field
-std::string block[7];
-char field[FIELD_HEIGHT][FIELD_WIDTH];
+static const int field_width = 12;
+static const int field_height = 24;
+std::string blocks[7];
+char field[field_height][field_width];
 
 int main() {
-    block[0] = "  x   x   x   x "; //I block
-    block[1] = "     xx  xx     "; //O block
-    block[2] = " x   xx   x     "; //S block
-    block[3] = "  x  xx  x      "; //Z block
-    block[4] = "      x  xxx    "; //T block
-    block[5] = " x   x   xx     "; //L block
-    block[6] = "  x   x  xx     "; //J block
+    //blocks[0] = "  x   x   x   x "; //I block
+	blocks[0] = "  x "
+				"  x "
+				"  x "
+				"  x " ;
+    blocks[1] = "     xx  xx     "; //O block
+    blocks[2] = " x   xx   x     "; //S block
+    blocks[3] = "  x  xx  x      "; //Z block
+    blocks[4] = "      x  xxx    "; //T block
+    blocks[5] = " x   x   xx     "; //L block
+    blocks[6] = "  x   x  xx     "; //J block
 
     //printField(field,FIELD_HEIGHT,FIELD_WIDTH);
-    fieldInit(field,FIELD_HEIGHT,FIELD_WIDTH);
-    printField(field,FIELD_HEIGHT,FIELD_WIDTH);
-    printBlock(block[0]);
-    printBlock(block[1]);
-    printBlock(block[2]);
-    printBlock(block[3]);
-    printBlock(block[4]);
-    printBlock(block[5]);
-    printBlock(block[6]);
+	fieldInit(field, field_height, field_width);
+	printField(field, field_height, field_width);
+    printBlock(blocks[0]);
+    printBlock(blocks[1]);
+    printBlock(blocks[2]);
+    printBlock(blocks[3]);
+    printBlock(blocks[4]);
+    printBlock(blocks[5]);
+    printBlock(blocks[6]);
     
     
     //std::cout << block[1] << std::endl;
-    
+	std::cin.get();
     return 0;
 }
 
